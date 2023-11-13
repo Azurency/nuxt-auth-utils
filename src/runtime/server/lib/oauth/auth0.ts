@@ -5,7 +5,7 @@ import { ofetch } from 'ofetch'
 import { defu } from 'defu'
 import { useRuntimeConfig } from '#imports'
 import type { OAuthConfig } from '#auth-utils'
-import crypto from 'crypto'
+import { type OAuthChecks, checks } from '../../utils/security'
 
 export interface OAuthAuth0Config {
   /**
@@ -68,25 +68,13 @@ export interface OAuthAuth0Config {
   checks?: OAuthChecks[]
 }
 
-type OAuthChecks = 'pkce' | 'state'
-
-function base64URLEncode(str: string) {
-  return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-}
-function randomBytes(length: number) {
-  return crypto.randomBytes(length).toString('base64')
-}
-function sha256(buffer: string) {
-  return crypto.createHash('sha256').update(buffer).digest('base64')
-}
-
 export function auth0EventHandler({ config, onSuccess, onError }: OAuthConfig<OAuthAuth0Config>) {
   return eventHandler(async (event: H3Event) => {
     // @ts-ignore
     config = defu(config, useRuntimeConfig(event).oauth?.auth0, {
       authorizationParams: {}
     }) as OAuthAuth0Config
-    const { code, state } = getQuery(event)
+    const { code } = getQuery(event)
 
     if (!config.clientId || !config.clientSecret || !config.domain) {
       const error = createError({
@@ -101,19 +89,7 @@ export function auth0EventHandler({ config, onSuccess, onError }: OAuthConfig<OA
 
     const redirectUrl = getRequestURL(event).href
     if (!code) {
-      // Initialize checks
-      const checks: Record<string, string> = {}
-      if (config.checks?.includes('pkce')) {
-        const pkceVerifier = base64URLEncode(randomBytes(32))
-        const pkceChallenge = base64URLEncode(sha256(pkceVerifier))
-        checks['code_challenge'] = pkceChallenge
-        checks['code_challenge_method'] = 'S256'
-        setCookie(event, 'nuxt-auth-util-verifier', pkceVerifier, { maxAge: 60 * 15, secure: true, httpOnly: true })
-      }
-      if (config.checks?.includes('state')) {
-        checks['state'] = base64URLEncode(randomBytes(32))
-        setCookie(event, 'nuxt-auth-util-state', checks['state'], { maxAge: 60 * 15, secure: true, httpOnly: true })
-      }
+      const authParam = await checks.create(event, config.checks) // Initialize checks
       config.scope = config.scope || ['openid', 'offline_access']
       if (config.emailRequired && !config.scope.includes('email')) {
         config.scope.push('email')
@@ -130,33 +106,18 @@ export function auth0EventHandler({ config, onSuccess, onError }: OAuthConfig<OA
           max_age: config.maxAge || 0,
           connection: config.connection || '',
           ...config.authorizationParams,
-          ...checks
+          ...authParam
         })
       )
     }
 
     // Verify checks
-    const pkceVerifier = getCookie(event, 'nuxt-auth-util-verifier')
-    setCookie(event, 'nuxt-auth-util-verifier', '', { maxAge: -1 })
-    const stateInCookie = getCookie(event, 'nuxt-auth-util-state')
-    setCookie(event, 'nuxt-auth-util-state', '', { maxAge: -1 })
-    if (config.checks?.includes('state')) {
-      if (!state || !stateInCookie) {
-        const error = createError({
-          statusCode: 401,
-          message: 'Auth0 login failed: state is missing'
-        })
-        if (!onError) throw error
-        return onError(event, error)
-      }
-      if (state !== stateInCookie) {
-        const error = createError({
-          statusCode: 401,
-          message: 'Auth0 login failed: state does not match'
-        })
-        if (!onError) throw error
-        return onError(event, error)
-      }
+    let checkResult
+    try {
+      checkResult = await checks.use(event, config.checks)
+    } catch (error) {
+      if (!onError) throw error
+      return onError(event, error as H3Error)
     }
 
     const tokens: any = await ofetch(
@@ -172,7 +133,7 @@ export function auth0EventHandler({ config, onSuccess, onError }: OAuthConfig<OA
           client_secret: config.clientSecret,
           redirect_uri: parsePath(redirectUrl).pathname,
           code,
-          code_verifier: pkceVerifier
+          ...checkResult
         }
       }
     ).catch(error => {
