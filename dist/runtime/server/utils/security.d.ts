@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3';
+import { type H3Event } from 'h3';
 export type OAuthChecks = 'pkce' | 'state';
 export declare function encodeBase64Url(input: Uint8Array | ArrayBuffer): string;
 /**
