@@ -6,6 +6,7 @@ import { auth0EventHandler } from "../lib/oauth/auth0.mjs";
 import { microsoftEventHandler } from "../lib/oauth/microsoft.mjs";
 import { discordEventHandler } from "../lib/oauth/discord.mjs";
 import { battledotnetEventHandler } from "../lib/oauth/battledotnet.mjs";
+import { linkedinEventHandler } from "../lib/oauth/linkedin.mjs";
 export const oauth = {
   githubEventHandler,
   spotifyEventHandler,
@@ -14,5 +15,6 @@ export const oauth = {
   auth0EventHandler,
   microsoftEventHandler,
   discordEventHandler,
-  battledotnetEventHandler
+  battledotnetEventHandler,
+  linkedinEventHandler
 };

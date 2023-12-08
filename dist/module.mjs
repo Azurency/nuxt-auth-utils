@@ -86,7 +86,8 @@ const module = defineNuxtModule({
     runtimeConfig.oauth.auth0 = defu(runtimeConfig.oauth.auth0, {
       clientId: "",
       clientSecret: "",
-      domain: ""
+      domain: "",
+      audience: ""
     });
     runtimeConfig.oauth.microsoft = defu(runtimeConfig.oauth.microsoft, {
       clientId: "",
@@ -102,6 +103,10 @@ const module = defineNuxtModule({
       clientSecret: ""
     });
     runtimeConfig.oauth.battledotnet = defu(runtimeConfig.oauth.battledotnet, {
+      clientId: "",
+      clientSecret: ""
+    });
+    runtimeConfig.oauth.linkedin = defu(runtimeConfig.oauth.linkedin, {
       clientId: "",
       clientSecret: ""
     });

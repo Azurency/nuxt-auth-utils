@@ -6,6 +6,7 @@ import { auth0EventHandler } from '../lib/oauth/auth0';
 import { microsoftEventHandler } from '../lib/oauth/microsoft';
 import { discordEventHandler } from '../lib/oauth/discord';
 import { battledotnetEventHandler } from '../lib/oauth/battledotnet';
+import { linkedinEventHandler } from '../lib/oauth/linkedin';
 export declare const oauth: {
     githubEventHandler: typeof githubEventHandler;
     spotifyEventHandler: typeof spotifyEventHandler;
@@ -15,4 +16,5 @@ export declare const oauth: {
     microsoftEventHandler: typeof microsoftEventHandler;
     discordEventHandler: typeof discordEventHandler;
     battledotnetEventHandler: typeof battledotnetEventHandler;
+    linkedinEventHandler: typeof linkedinEventHandler;
 };
