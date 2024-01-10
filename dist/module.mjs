@@ -30,6 +30,7 @@ const module = defineNuxtModule({
           {
             from: resolver.resolve("./runtime/server/utils/session"),
             imports: [
+              "sessionHooks",
               "getUserSession",
               "setUserSession",
               "clearUserSession",
@@ -105,6 +106,12 @@ const module = defineNuxtModule({
     runtimeConfig.oauth.battledotnet = defu(runtimeConfig.oauth.battledotnet, {
       clientId: "",
       clientSecret: ""
+    });
+    runtimeConfig.oauth.keycloak = defu(runtimeConfig.oauth.keycloak, {
+      clientId: "",
+      clientSecret: "",
+      serverUrl: "",
+      realm: ""
     });
     runtimeConfig.oauth.linkedin = defu(runtimeConfig.oauth.linkedin, {
       clientId: "",

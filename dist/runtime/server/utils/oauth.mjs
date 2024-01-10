@@ -6,6 +6,7 @@ import { auth0EventHandler } from "../lib/oauth/auth0.mjs";
 import { microsoftEventHandler } from "../lib/oauth/microsoft.mjs";
 import { discordEventHandler } from "../lib/oauth/discord.mjs";
 import { battledotnetEventHandler } from "../lib/oauth/battledotnet.mjs";
+import { keycloakEventHandler } from "../lib/oauth/keycloak.mjs";
 import { linkedinEventHandler } from "../lib/oauth/linkedin.mjs";
 export const oauth = {
   githubEventHandler,
@@ -16,5 +17,6 @@ export const oauth = {
   microsoftEventHandler,
   discordEventHandler,
   battledotnetEventHandler,
+  keycloakEventHandler,
   linkedinEventHandler
 };

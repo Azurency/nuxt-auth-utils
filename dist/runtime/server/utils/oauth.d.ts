@@ -6,6 +6,7 @@ import { auth0EventHandler } from '../lib/oauth/auth0';
 import { microsoftEventHandler } from '../lib/oauth/microsoft';
 import { discordEventHandler } from '../lib/oauth/discord';
 import { battledotnetEventHandler } from '../lib/oauth/battledotnet';
+import { keycloakEventHandler } from '../lib/oauth/keycloak';
 import { linkedinEventHandler } from '../lib/oauth/linkedin';
 export declare const oauth: {
     githubEventHandler: typeof githubEventHandler;
@@ -16,5 +17,6 @@ export declare const oauth: {
     microsoftEventHandler: typeof microsoftEventHandler;
     discordEventHandler: typeof discordEventHandler;
     battledotnetEventHandler: typeof battledotnetEventHandler;
+    keycloakEventHandler: typeof keycloakEventHandler;
     linkedinEventHandler: typeof linkedinEventHandler;
 };

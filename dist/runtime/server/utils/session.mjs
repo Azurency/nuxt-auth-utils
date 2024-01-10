@@ -1,6 +1,8 @@
 import { useSession, createError } from "h3";
 import { defu } from "defu";
+import { createHooks } from "hookable";
 import { useRuntimeConfig } from "#imports";
+export const sessionHooks = createHooks();
 export async function getUserSession(event) {
   return (await _useSession(event)).data;
 }
@@ -11,6 +13,7 @@ export async function setUserSession(event, data) {
 }
 export async function clearUserSession(event) {
   const session = await _useSession(event);
+  await sessionHooks.callHookParallel("clear", session.data, event);
   await session.clear();
   return true;
 }
