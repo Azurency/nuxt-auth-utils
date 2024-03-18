@@ -38,5 +38,11 @@ export interface OAuthDiscordConfig {
      * @default 'https://discord.com/api/oauth2/token'
      */
     tokenURL?: string;
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     * @see 'https://discord.com/developers/docs/topics/oauth2#authorization-code-grant'
+     * @example { allow_signup: 'true' }
+     */
+    authorizationParams?: Record<string, string>;
 }
 export declare function discordEventHandler({ config, onSuccess, onError }: OAuthConfig<OAuthDiscordConfig>): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<any>>;

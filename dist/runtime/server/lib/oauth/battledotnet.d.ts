@@ -34,5 +34,10 @@ export interface OAuthBattledotnetConfig {
      * @default 'https://oauth.battle.net/token'
      */
     tokenURL?: string;
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     * @see https://develop.battle.net/documentation/guides/using-oauth/authorization-code-flow
+     */
+    authorizationParams?: Record<string, string>;
 }
 export declare function battledotnetEventHandler({ config, onSuccess, onError }: OAuthConfig<OAuthBattledotnetConfig>): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<any>>;

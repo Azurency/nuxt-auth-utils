@@ -23,22 +23,27 @@ export interface OAuthMicrosoftConfig {
     scope?: string[];
     /**
      * Microsoft OAuth Authorization URL
-     * @default https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize
+     * @default 'https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize'
      * @see https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
      */
     authorizationURL?: string;
     /**
      * Microsoft OAuth Token URL
-     * @default https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token
+     * @default 'https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token'
      * @see https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
      */
     tokenURL?: string;
     /**
      * Microsoft OAuth User URL
-     * @default https://graph.microsoft.com/v1.0/me
+     * @default 'https://graph.microsoft.com/v1.0/me'
      * @see https://docs.microsoft.com/en-us/graph/api/user-get?view=graph-rest-1.0&tabs=http
      */
     userURL?: string;
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     * @see https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
+     */
+    authorizationParams?: Record<string, string>;
 }
 interface OAuthConfig {
     config?: OAuthMicrosoftConfig;

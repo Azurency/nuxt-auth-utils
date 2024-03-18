@@ -7,7 +7,8 @@ export function linkedinEventHandler({ config, onSuccess, onError }) {
   return eventHandler(async (event) => {
     config = defu(config, useRuntimeConfig(event).oauth?.linkedin, {
       authorizationURL: "https://www.linkedin.com/oauth/v2/authorization",
-      tokenURL: "https://www.linkedin.com/oauth/v2/accessToken"
+      tokenURL: "https://www.linkedin.com/oauth/v2/accessToken",
+      authorizationParams: {}
     });
     const { code } = getQuery(event);
     if (!config.clientId || !config.clientSecret) {
@@ -34,7 +35,8 @@ export function linkedinEventHandler({ config, onSuccess, onError }) {
           response_type: "code",
           client_id: config.clientId,
           redirect_uri: redirectUrl,
-          scope: config.scope.join(" ")
+          scope: config.scope.join(" "),
+          ...config.authorizationParams
         })
       );
     }

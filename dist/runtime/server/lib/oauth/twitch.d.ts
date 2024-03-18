@@ -32,5 +32,11 @@ export interface OAuthTwitchConfig {
      * @default 'https://id.twitch.tv/oauth2/token'
      */
     tokenURL?: string;
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     * @see https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow
+     * @example { force_verify: 'true' }
+     */
+    authorizationParams?: Record<string, string>;
 }
 export declare function twitchEventHandler({ config, onSuccess, onError }: OAuthConfig<OAuthTwitchConfig>): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<any>>;

@@ -7,7 +7,8 @@ export function twitchEventHandler({ config, onSuccess, onError }) {
   return eventHandler(async (event) => {
     config = defu(config, useRuntimeConfig(event).oauth?.twitch, {
       authorizationURL: "https://id.twitch.tv/oauth2/authorize",
-      tokenURL: "https://id.twitch.tv/oauth2/token"
+      tokenURL: "https://id.twitch.tv/oauth2/token",
+      authorizationParams: {}
     });
     const { code } = getQuery(event);
     if (!config.clientId) {
@@ -31,7 +32,8 @@ export function twitchEventHandler({ config, onSuccess, onError }) {
           response_type: "code",
           client_id: config.clientId,
           redirect_uri: redirectUrl,
-          scope: config.scope.join("%20")
+          scope: config.scope.join(" "),
+          ...config.authorizationParams
         })
       );
     }

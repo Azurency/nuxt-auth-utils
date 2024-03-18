@@ -1,6 +1,6 @@
 import { useState, computed, useRequestFetch } from "#imports";
 const useSessionState = () => useState("nuxt-session", () => ({}));
-export const useUserSession = () => {
+export function useUserSession() {
   const sessionState = useSessionState();
   return {
     loggedIn: computed(() => Boolean(sessionState.value.user)),
@@ -9,7 +9,7 @@ export const useUserSession = () => {
     fetch,
     clear
   };
-};
+}
 async function fetch() {
   useSessionState().value = await useRequestFetch()("/api/_auth/session", {
     headers: {

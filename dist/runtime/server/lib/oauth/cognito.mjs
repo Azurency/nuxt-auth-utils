@@ -3,54 +3,45 @@ import { withQuery, parsePath } from "ufo";
 import { ofetch } from "ofetch";
 import { defu } from "defu";
 import { useRuntimeConfig } from "#imports";
-export function spotifyEventHandler({ config, onSuccess, onError }) {
+export function cognitoEventHandler({ config, onSuccess, onError }) {
   return eventHandler(async (event) => {
-    config = defu(config, useRuntimeConfig(event).oauth?.spotify, {
-      authorizationURL: "https://accounts.spotify.com/authorize",
-      tokenURL: "https://accounts.spotify.com/api/token",
+    config = defu(config, useRuntimeConfig(event).oauth?.cognito, {
       authorizationParams: {}
     });
     const { code } = getQuery(event);
-    if (!config.clientId || !config.clientSecret) {
+    if (!config.clientId || !config.clientSecret || !config.userPoolId || !config.region) {
       const error = createError({
         statusCode: 500,
-        message: "Missing NUXT_OAUTH_SPOTIFY_CLIENT_ID or NUXT_OAUTH_SPOTIFY_CLIENT_SECRET env variables."
+        message: "Missing NUXT_OAUTH_COGNITO_CLIENT_ID, NUXT_OAUTH_COGNITO_CLIENT_SECRET, NUXT_OAUTH_COGNITO_USER_POOL_ID, or NUXT_OAUTH_COGNITO_REGION env variables."
       });
       if (!onError)
         throw error;
       return onError(event, error);
     }
+    const authorizationURL = `https://${config.userPoolId}.auth.${config.region}.amazoncognito.com/oauth2/authorize`;
+    const tokenURL = `https://${config.userPoolId}.auth.${config.region}.amazoncognito.com/oauth2/token`;
     const redirectUrl = getRequestURL(event).href;
     if (!code) {
-      config.scope = config.scope || [];
-      if (config.emailRequired && !config.scope.includes("user-read-email")) {
-        config.scope.push("user-read-email");
-      }
+      config.scope = config.scope || ["openid", "profile"];
       return sendRedirect(
         event,
-        withQuery(config.authorizationURL, {
-          response_type: "code",
+        withQuery(authorizationURL, {
           client_id: config.clientId,
           redirect_uri: redirectUrl,
+          response_type: "code",
           scope: config.scope.join(" "),
           ...config.authorizationParams
         })
       );
     }
-    const authCode = Buffer.from(`${config.clientId}:${config.clientSecret}`).toString("base64");
     const tokens = await ofetch(
-      config.tokenURL,
+      tokenURL,
       {
         method: "POST",
         headers: {
-          Authorization: `Basic ${authCode}`,
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        params: {
-          grant_type: "authorization_code",
-          redirect_uri: parsePath(redirectUrl).pathname,
-          code
-        }
+        body: `grant_type=authorization_code&client_id=${config.clientId}&client_secret=${config.clientSecret}&redirect_uri=${parsePath(redirectUrl).pathname}&code=${code}`
       }
     ).catch((error) => {
       return { error };
@@ -58,17 +49,18 @@ export function spotifyEventHandler({ config, onSuccess, onError }) {
     if (tokens.error) {
       const error = createError({
         statusCode: 401,
-        message: `Spotify login failed: ${tokens.error?.data?.error_description || "Unknown error"}`,
+        message: `Cognito login failed: ${tokens.error_description || "Unknown error"}`,
         data: tokens
       });
       if (!onError)
         throw error;
       return onError(event, error);
     }
+    const tokenType = tokens.token_type;
     const accessToken = tokens.access_token;
-    const user = await ofetch("https://api.spotify.com/v1/me", {
+    const user = await ofetch(`https://${config.userPoolId}.auth.${config.region}.amazoncognito.com/oauth2/userInfo`, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
+        Authorization: `${tokenType} ${accessToken}`
       }
     });
     return onSuccess(event, {

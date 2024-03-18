@@ -1,6 +1,8 @@
 import { defineNuxtModule, createResolver, addImportsDir, addPlugin, addServerHandler } from '@nuxt/kit';
-import { sha256 } from 'ohash';
+import { join } from 'pathe';
 import { defu } from 'defu';
+import { randomUUID } from 'uncrypto';
+import { readFile, writeFile } from 'node:fs/promises';
 
 const module = defineNuxtModule({
   meta: {
@@ -9,14 +11,8 @@ const module = defineNuxtModule({
   },
   // Default configuration options of the Nuxt module
   defaults: {},
-  setup(options, nuxt) {
+  async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
-    if (!process.env.NUXT_SESSION_PASSWORD && !nuxt.options._prepare) {
-      const randomPassword = sha256(`${Date.now()}${Math.random()}`).slice(0, 32);
-      process.env.NUXT_SESSION_PASSWORD = randomPassword;
-      console.warn("No session password set, using a random password, please set NUXT_SESSION_PASSWORD in your .env file with at least 32 chars");
-      console.log(`NUXT_SESSION_PASSWORD=${randomPassword}`);
-    }
     nuxt.options.alias["#auth-utils"] = resolver.resolve("./runtime/types/index");
     addImportsDir(resolver.resolve("./runtime/composables"));
     addPlugin(resolver.resolve("./runtime/plugins/session.server"));
@@ -33,6 +29,7 @@ const module = defineNuxtModule({
               "sessionHooks",
               "getUserSession",
               "setUserSession",
+              "replaceUserSession",
               "clearUserSession",
               "requireUserSession"
             ]
@@ -53,11 +50,19 @@ const module = defineNuxtModule({
     const runtimeConfig = nuxt.options.runtimeConfig;
     runtimeConfig.session = defu(runtimeConfig.session, {
       name: "nuxt-session",
-      password: "",
+      password: process.env.NUXT_SESSION_PASSWORD || "",
       cookie: {
         sameSite: "lax"
       }
     });
+    if (nuxt.options.dev && !runtimeConfig.session.password) {
+      runtimeConfig.session.password = randomUUID().replace(/-/g, "");
+      const envPath = join(nuxt.options.rootDir, ".env");
+      const envContent = await readFile(envPath, "utf-8").catch(() => "");
+      if (!envContent.includes("NUXT_SESSION_PASSWORD")) {
+        await writeFile(envPath, `${envContent ? envContent + "\n" : envContent}NUXT_SESSION_PASSWORD=${runtimeConfig.session.password}`, "utf-8");
+      }
+    }
     runtimeConfig.nuxtAuthUtils = defu(runtimeConfig.nuxtAuthUtils, {});
     runtimeConfig.nuxtAuthUtils.security = defu(runtimeConfig.nuxtAuthUtils.security, {
       cookie: {
@@ -116,6 +121,12 @@ const module = defineNuxtModule({
     runtimeConfig.oauth.linkedin = defu(runtimeConfig.oauth.linkedin, {
       clientId: "",
       clientSecret: ""
+    });
+    runtimeConfig.oauth.cognito = defu(runtimeConfig.oauth.cognito, {
+      clientId: "",
+      clientSecret: "",
+      region: "",
+      userPoolId: ""
     });
   }
 });

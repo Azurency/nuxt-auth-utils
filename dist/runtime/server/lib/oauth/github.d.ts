@@ -32,5 +32,11 @@ export interface OAuthGitHubConfig {
      * @default 'https://github.com/login/oauth/access_token'
      */
     tokenURL?: string;
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     * @see https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#1-request-a-users-github-identity
+     * @example { allow_signup: 'true' }
+     */
+    authorizationParams?: Record<string, string>;
 }
 export declare function githubEventHandler({ config, onSuccess, onError }: OAuthConfig<OAuthGitHubConfig>): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<any>>;

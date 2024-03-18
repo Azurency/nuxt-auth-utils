@@ -8,6 +8,7 @@ import { discordEventHandler } from "../lib/oauth/discord.mjs";
 import { battledotnetEventHandler } from "../lib/oauth/battledotnet.mjs";
 import { keycloakEventHandler } from "../lib/oauth/keycloak.mjs";
 import { linkedinEventHandler } from "../lib/oauth/linkedin.mjs";
+import { cognitoEventHandler } from "../lib/oauth/cognito.mjs";
 export const oauth = {
   githubEventHandler,
   spotifyEventHandler,
@@ -18,5 +19,6 @@ export const oauth = {
   discordEventHandler,
   battledotnetEventHandler,
   keycloakEventHandler,
-  linkedinEventHandler
+  linkedinEventHandler,
+  cognitoEventHandler
 };

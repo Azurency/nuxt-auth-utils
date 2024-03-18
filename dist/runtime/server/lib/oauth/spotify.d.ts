@@ -32,5 +32,11 @@ export interface OAuthSpotifyConfig {
      * @default 'https://accounts.spotify.com/api/token'
      */
     tokenURL?: string;
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     * @see 'https://developer.spotify.com/documentation/web-api/tutorials/code-flow'
+     * @example { show_dialog: 'true' }
+     */
+    authorizationParams?: Record<string, string>;
 }
 export declare function spotifyEventHandler({ config, onSuccess, onError }: OAuthConfig<OAuthSpotifyConfig>): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<any>>;

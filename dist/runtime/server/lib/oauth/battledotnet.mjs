@@ -8,7 +8,8 @@ export function battledotnetEventHandler({ config, onSuccess, onError }) {
   return eventHandler(async (event) => {
     config = defu(config, useRuntimeConfig(event).oauth?.battledotnet, {
       authorizationURL: "https://oauth.battle.net/authorize",
-      tokenURL: "https://oauth.battle.net/token"
+      tokenURL: "https://oauth.battle.net/token",
+      authorizationParams: {}
     });
     const query = getQuery(event);
     const { code } = query;
@@ -47,7 +48,8 @@ export function battledotnetEventHandler({ config, onSuccess, onError }) {
           scope: config.scope.join(" "),
           state: randomUUID(),
           // Todo: handle PKCE flow
-          response_type: "code"
+          response_type: "code",
+          ...config.authorizationParams
         })
       );
     }

@@ -6,7 +6,9 @@ import { useRuntimeConfig } from "#imports";
 import { checks } from "../../utils/security.mjs";
 export function auth0EventHandler({ config, onSuccess, onError }) {
   return eventHandler(async (event) => {
-    config = defu(config, useRuntimeConfig(event).oauth?.auth0);
+    config = defu(config, useRuntimeConfig(event).oauth?.auth0, {
+      authorizationParams: {}
+    });
     const { code } = getQuery(event);
     if (!config.clientId || !config.clientSecret || !config.domain) {
       const error = createError({
@@ -35,6 +37,8 @@ export function auth0EventHandler({ config, onSuccess, onError }) {
           scope: config.scope.join(" "),
           audience: config.audience || "",
           max_age: config.maxAge || 0,
+          connection: config.connection || "",
+          ...config.authorizationParams,
           ...authParam
         })
       );

@@ -28,5 +28,9 @@ export interface OAuthKeycloakConfig {
      * @example ['openid']
      */
     scope?: string[];
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     */
+    authorizationParams?: Record<string, string>;
 }
 export declare function keycloakEventHandler({ config, onSuccess, onError, }: OAuthConfig<OAuthKeycloakConfig>): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<any>>;

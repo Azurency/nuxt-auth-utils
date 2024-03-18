@@ -8,7 +8,8 @@ export function discordEventHandler({ config, onSuccess, onError }) {
     config = defu(config, useRuntimeConfig(event).oauth?.discord, {
       authorizationURL: "https://discord.com/oauth2/authorize",
       tokenURL: "https://discord.com/api/oauth2/token",
-      profileRequired: true
+      profileRequired: true,
+      authorizationParams: {}
     });
     const { code } = getQuery(event);
     if (!config.clientId || !config.clientSecret) {
@@ -35,7 +36,8 @@ export function discordEventHandler({ config, onSuccess, onError }) {
           response_type: "code",
           client_id: config.clientId,
           redirect_uri: redirectUrl,
-          scope: config.scope.join(" ")
+          scope: config.scope.join(" "),
+          ...config.authorizationParams
         })
       );
     }

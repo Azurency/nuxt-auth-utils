@@ -31,6 +31,11 @@ export interface OAuthLinkedInConfig {
      * @default 'https://www.linkedin.com/oauth/v2/accessToken'
      */
     tokenURL?: string;
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     * @see https://docs.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow?context=linkedin/context
+     */
+    authorizationParams?: Record<string, string>;
 }
 interface OAuthConfig {
     config?: OAuthLinkedInConfig;

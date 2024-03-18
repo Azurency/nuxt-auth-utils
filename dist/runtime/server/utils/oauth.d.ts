@@ -8,6 +8,7 @@ import { discordEventHandler } from '../lib/oauth/discord';
 import { battledotnetEventHandler } from '../lib/oauth/battledotnet';
 import { keycloakEventHandler } from '../lib/oauth/keycloak';
 import { linkedinEventHandler } from '../lib/oauth/linkedin';
+import { cognitoEventHandler } from '../lib/oauth/cognito';
 export declare const oauth: {
     githubEventHandler: typeof githubEventHandler;
     spotifyEventHandler: typeof spotifyEventHandler;
@@ -19,4 +20,5 @@ export declare const oauth: {
     battledotnetEventHandler: typeof battledotnetEventHandler;
     keycloakEventHandler: typeof keycloakEventHandler;
     linkedinEventHandler: typeof linkedinEventHandler;
+    cognitoEventHandler: typeof cognitoEventHandler;
 };

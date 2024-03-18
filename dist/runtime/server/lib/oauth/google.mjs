@@ -17,7 +17,8 @@ export function googleEventHandler({
   return eventHandler(async (event) => {
     config = defu(config, useRuntimeConfig(event).oauth?.google, {
       authorizationURL: "https://accounts.google.com/o/oauth2/v2/auth",
-      tokenURL: "https://oauth2.googleapis.com/token"
+      tokenURL: "https://oauth2.googleapis.com/token",
+      authorizationParams: {}
     });
     const { code } = getQuery(event);
     if (!config.clientId) {
@@ -38,7 +39,8 @@ export function googleEventHandler({
           response_type: "code",
           client_id: config.clientId,
           redirect_uri: redirectUrl,
-          scope: config.scope.join(" ")
+          scope: config.scope.join(" "),
+          ...config.authorizationParams
         })
       );
     }

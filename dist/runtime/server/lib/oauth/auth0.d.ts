@@ -40,6 +40,19 @@ export interface OAuthAuth0Config {
      */
     maxAge?: number;
     /**
+     * Login connection. If no connection is specified, it will redirect to the standard Auth0 login page and show the Login Widget.
+     * @default ''
+     * @see https://auth0.com/docs/api/authentication#social
+     * @example 'github'
+     */
+    connection?: string;
+    /**
+     * Extra authorization parameters to provide to the authorization URL
+     * @see https://auth0.com/docs/api/authentication#social
+     * @example { display: 'popup' }
+     */
+    authorizationParams?: Record<string, string>;
+    /**
      * checks
      * @default []
      * @see https://auth0.com/docs/flows/authorization-code-flow-with-proof-key-for-code-exchange-pkce

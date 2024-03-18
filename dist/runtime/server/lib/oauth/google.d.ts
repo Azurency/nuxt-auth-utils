@@ -28,9 +28,10 @@ export interface OAuthGoogleConfig {
      */
     tokenURL?: string;
     /**
-     * Redirect URL post authenticating via google
-     * @default '/auth/google'
+     * Extra authorization parameters to provide to the authorization URL
+     * @see https://developers.google.com/identity/protocols/oauth2/web-server#httprest_3
+     * @example { access_type: 'offline' }
      */
-    redirectUrl: '/auth/google';
+    authorizationParams?: Record<string, string>;
 }
 export declare function googleEventHandler({ config, onSuccess, onError, }: OAuthConfig<OAuthGoogleConfig>): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<any>>;

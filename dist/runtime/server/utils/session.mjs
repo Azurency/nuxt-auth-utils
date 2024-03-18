@@ -11,6 +11,12 @@ export async function setUserSession(event, data) {
   await session.update(defu(data, session.data));
   return session.data;
 }
+export async function replaceUserSession(event, data) {
+  const session = await _useSession(event);
+  await session.clear();
+  await session.update(data);
+  return session.data;
+}
 export async function clearUserSession(event) {
   const session = await _useSession(event);
   await sessionHooks.callHookParallel("clear", session.data, event);

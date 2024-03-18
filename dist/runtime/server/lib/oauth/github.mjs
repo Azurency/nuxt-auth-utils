@@ -7,9 +7,20 @@ export function githubEventHandler({ config, onSuccess, onError }) {
   return eventHandler(async (event) => {
     config = defu(config, useRuntimeConfig(event).oauth?.github, {
       authorizationURL: "https://github.com/login/oauth/authorize",
-      tokenURL: "https://github.com/login/oauth/access_token"
+      tokenURL: "https://github.com/login/oauth/access_token",
+      authorizationParams: {}
     });
-    const { code } = getQuery(event);
+    const query = getQuery(event);
+    if (query.error) {
+      const error = createError({
+        statusCode: 401,
+        message: `GitHub login failed: ${query.error || "Unknown error"}`,
+        data: query
+      });
+      if (!onError)
+        throw error;
+      return onError(event, error);
+    }
     if (!config.clientId || !config.clientSecret) {
       const error = createError({
         statusCode: 500,
@@ -19,7 +30,7 @@ export function githubEventHandler({ config, onSuccess, onError }) {
         throw error;
       return onError(event, error);
     }
-    if (!code) {
+    if (!query.code) {
       config.scope = config.scope || [];
       if (config.emailRequired && !config.scope.includes("user:email")) {
         config.scope.push("user:email");
@@ -30,7 +41,8 @@ export function githubEventHandler({ config, onSuccess, onError }) {
         withQuery(config.authorizationURL, {
           client_id: config.clientId,
           redirect_uri: redirectUrl,
-          scope: config.scope.join("%20")
+          scope: config.scope.join(" "),
+          ...config.authorizationParams
         })
       );
     }
@@ -41,7 +53,7 @@ export function githubEventHandler({ config, onSuccess, onError }) {
         body: {
           client_id: config.clientId,
           client_secret: config.clientSecret,
-          code
+          code: query.code
         }
       }
     );

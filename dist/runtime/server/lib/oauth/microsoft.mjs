@@ -5,7 +5,9 @@ import { defu } from "defu";
 import { useRuntimeConfig } from "#imports";
 export function microsoftEventHandler({ config, onSuccess, onError }) {
   return eventHandler(async (event) => {
-    config = defu(config, useRuntimeConfig(event).oauth?.microsoft);
+    config = defu(config, useRuntimeConfig(event).oauth?.microsoft, {
+      authorizationParams: {}
+    });
     const { code } = getQuery(event);
     if (!config.clientId || !config.clientSecret || !config.tenant) {
       const error = createError({
@@ -27,7 +29,8 @@ export function microsoftEventHandler({ config, onSuccess, onError }) {
           client_id: config.clientId,
           response_type: "code",
           redirect_uri: redirectUrl,
-          scope: scope.join("%20")
+          scope: scope.join(" "),
+          ...config.authorizationParams
         })
       );
     }

@@ -15,11 +15,9 @@ export function keycloakEventHandler({
   onError
 }) {
   return eventHandler(async (event) => {
-    config = defu(
-      config,
-      // @ts-ignore
-      useRuntimeConfig(event).oauth?.keycloak
-    );
+    config = defu(config, useRuntimeConfig(event).oauth?.keycloak, {
+      authorizationParams: {}
+    });
     const query = getQuery(event);
     const { code } = query;
     if (query.error) {
@@ -53,7 +51,8 @@ export function keycloakEventHandler({
           client_id: config.clientId,
           redirect_uri: redirectUrl,
           scope: config.scope.join(" "),
-          response_type: "code"
+          response_type: "code",
+          ...config.authorizationParams
         })
       );
     }
