@@ -2,8 +2,8 @@ import { eventHandler, getQuery, sendRedirect } from "h3";
 import { withQuery } from "ufo";
 import { defu } from "defu";
 import { handleMissingConfiguration, handleAccessTokenErrorResponse, getOAuthRedirectURL, requestAccessToken } from "../utils.js";
-import { checks } from "../../utils/security.js";
 import { useRuntimeConfig } from "#imports";
+import { checks } from "../../utils/security.js";
 export function defineOAuthAuth0EventHandler({ config, onSuccess, onError }) {
   return eventHandler(async (event) => {
     config = defu(config, useRuntimeConfig(event).oauth?.auth0, {

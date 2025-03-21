@@ -1,4 +1,5 @@
-import type { OAuthConfig, OAuthChecks } from '#auth-utils';
+import type { OAuthConfig } from '#auth-utils';
+import { type OAuthChecks } from '../../utils/security.js';
 export interface OAuthAuth0Config {
     /**
      * Auth0 OAuth Client ID
@@ -38,6 +39,13 @@ export interface OAuthAuth0Config {
      * @see https://auth0.com/docs/authenticate/login/max-age-reauthentication
      */
     maxAge?: number;
+    /**
+     * checks
+     * @default []
+     * @see https://auth0.com/docs/flows/authorization-code-flow-with-proof-key-for-code-exchange-pkce
+     * @see https://auth0.com/docs/protocols/oauth2/oauth-state
+     */
+    checks?: OAuthChecks[];
     /**
      * checks
      * @default []

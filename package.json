@@ -1,10 +1,10 @@
 {
-  "name": "nuxt-auth-utils",
+  "name": "@azurency/nuxt-auth-utils",
   "version": "0.5.17",
   "description": "Add Authentication to Nuxt applications with secured & sealed cookies sessions.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atinux/nuxt-auth-utils.git"
+    "url": "git+https://github.com/Azurency/nuxt-auth-utils.git"
   },
   "license": "MIT",
   "type": "module",

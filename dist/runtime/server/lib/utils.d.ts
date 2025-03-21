@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3';
+import { type H3Event } from 'h3';
 import type { OAuthProvider, OnError } from '#auth-utils';
 export declare function getOAuthRedirectURL(event: H3Event): string;
 /**
@@ -34,6 +34,7 @@ export declare function requestAccessToken(url: string, options: RequestAccessTo
  */
 export declare function handleAccessTokenErrorResponse(event: H3Event, oauthProvider: OAuthProvider, oauthError: any, onError?: OnError): void | Promise<void>;
 export declare function handleMissingConfiguration(event: H3Event, provider: OAuthProvider, missingKeys: string[], onError?: OnError): void | Promise<void>;
+export declare function handleInvalidState(event: H3Event, provider: OAuthProvider, onError?: OnError): void | Promise<void>;
 /**
  * JWT signing using jose
  *
@@ -59,4 +60,14 @@ interface JWTVerifyOptions {
     issuer: string;
 }
 export declare function verifyJwt<T>(token: string, options: JWTVerifyOptions): Promise<T>;
+export declare function handlePkceVerifier(event: H3Event): Promise<{
+    code_verifier: string;
+    code_challenge?: undefined;
+    code_challenge_method?: undefined;
+} | {
+    code_verifier: string;
+    code_challenge: string;
+    code_challenge_method: string;
+}>;
+export declare function handleState(event: H3Event): Promise<string>;
 export {};

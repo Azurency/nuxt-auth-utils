@@ -1,5 +1,5 @@
 import { type H3Event } from 'h3';
-import type { OAuthChecks } from '#auth-utils';
+export type OAuthChecks = 'pkce' | 'state';
 export declare function encodeBase64Url(input: Uint8Array | ArrayBuffer): string;
 /**
  * Generate a random `code_verifier` for use in the PKCE flow
@@ -27,15 +27,15 @@ interface CheckUseResult {
 export declare const checks: {
     /**
      * Create checks
-     * @param event H3Event
-     * @param checks OAuthChecks[] a list of checks to create
+     * @param event, H3Event
+     * @param checks, OAuthChecks[] a list of checks to create
      * @returns Record<string, string> a map of check parameters to add to the authorization URL
      */
     create(event: H3Event, checks?: OAuthChecks[]): Promise<Record<string, string>>;
     /**
      * Use checks, verifying and returning the results
-     * @param event H3Event
-     * @param checks OAuthChecks[] a list of checks to use
+     * @param event, H3Event
+     * @param checks, OAuthChecks[] a list of checks to use
      * @returns CheckUseResult a map that can contain `code_verifier` if `pkce` was used to be used in the token exchange
      */
     use(event: H3Event, checks?: OAuthChecks[]): Promise<CheckUseResult>;

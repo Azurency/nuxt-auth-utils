@@ -164,6 +164,16 @@ const module = defineNuxtModule({
       userURL: "",
       redirectURL: ""
     });
+    runtimeConfig.oauth.azureb2c = defu(runtimeConfig.oauth.azureb2c, {
+      clientId: "",
+      policy: "",
+      tenant: "",
+      scope: [],
+      authorizationURL: "",
+      tokenURL: "",
+      userURL: "",
+      redirectURL: ""
+    });
     runtimeConfig.oauth.discord = defu(runtimeConfig.oauth.discord, {
       clientId: "",
       clientSecret: "",
@@ -323,6 +333,15 @@ const module = defineNuxtModule({
       privateKey: "",
       redirectURL: "",
       clientId: ""
+    });
+    runtimeConfig.oauth.kick = defu(runtimeConfig.oauth.kick, {
+      clientId: "",
+      clientSecret: "",
+      redirectURL: ""
+    });
+    runtimeConfig.oauth.livechat = defu(runtimeConfig.oauth.livechat, {
+      clientId: "",
+      clientSecret: ""
     });
   }
 });

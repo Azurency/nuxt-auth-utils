@@ -29,7 +29,7 @@ export function defineOAuthFacebookEventHandler({
     }
     const redirectURL = config.redirectURL || getOAuthRedirectURL(event);
     if (!query.code) {
-      config.scope = config.scope || [];
+      config.scope = [...new Set(config.scope)];
       return sendRedirect(
         event,
         withQuery(config.authorizationURL, {
@@ -52,7 +52,7 @@ export function defineOAuthFacebookEventHandler({
       return handleAccessTokenErrorResponse(event, "facebook", tokens, onError);
     }
     const accessToken = tokens.access_token;
-    config.fields = config.fields || ["id", "name"];
+    config.fields = [...new Set(config.fields || ["id", "name"])];
     const fields = config.fields.join(",");
     const user = await $fetch(
       `https://graph.facebook.com/v19.0/me?fields=${fields}&access_token=${accessToken}`

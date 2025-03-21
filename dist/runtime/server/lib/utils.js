@@ -1,7 +1,9 @@
+import { deleteCookie, getCookie, setCookie } from "h3";
 import { getRequestURL } from "h3";
 import { FetchError } from "ofetch";
 import { snakeCase, upperFirst } from "scule";
 import * as jose from "jose";
+import { subtle, getRandomValues } from "uncrypto";
 import { createError } from "#imports";
 export function getOAuthRedirectURL(event) {
   const requestURL = getRequestURL(event);
@@ -45,6 +47,15 @@ export function handleMissingConfiguration(event, provider, missingKeys, onError
   if (!onError) throw error;
   return onError(event, error);
 }
+export function handleInvalidState(event, provider, onError) {
+  const message = `${upperFirst(provider)} login failed: state mismatch`;
+  const error = createError({
+    statusCode: 500,
+    message
+  });
+  if (!onError) throw error;
+  return onError(event, error);
+}
 export async function signJwt(payload, options) {
   const now = Math.floor(Date.now() / 1e3);
   const privateKey = await jose.importPKCS8(
@@ -60,4 +71,37 @@ export async function verifyJwt(token, options) {
     issuer: options.issuer
   });
   return payload;
+}
+function encodeBase64Url(input) {
+  return btoa(String.fromCharCode.apply(null, input)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function getRandomBytes(size = 32) {
+  return getRandomValues(new Uint8Array(size));
+}
+export async function handlePkceVerifier(event) {
+  let verifier = getCookie(event, "nuxt-auth-pkce");
+  if (verifier) {
+    deleteCookie(event, "nuxt-auth-pkce");
+    return { code_verifier: verifier };
+  }
+  verifier = encodeBase64Url(getRandomBytes());
+  setCookie(event, "nuxt-auth-pkce", verifier);
+  const encodedPkce = new TextEncoder().encode(verifier);
+  const pkceHash = await subtle.digest("SHA-256", encodedPkce);
+  const pkce = encodeBase64Url(new Uint8Array(pkceHash));
+  return {
+    code_verifier: verifier,
+    code_challenge: pkce,
+    code_challenge_method: "S256"
+  };
+}
+export async function handleState(event) {
+  let state = getCookie(event, "nuxt-auth-state");
+  if (state) {
+    deleteCookie(event, "nuxt-auth-state");
+    return state;
+  }
+  state = encodeBase64Url(getRandomBytes(8));
+  setCookie(event, "nuxt-auth-state", state);
+  return state;
 }

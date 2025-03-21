@@ -27,8 +27,8 @@ export async function pkceCodeChallenge(verifier) {
 export const checks = {
   /**
    * Create checks
-   * @param event H3Event
-   * @param checks OAuthChecks[] a list of checks to create
+   * @param event, H3Event
+   * @param checks, OAuthChecks[] a list of checks to create
    * @returns Record<string, string> a map of check parameters to add to the authorization URL
    */
   async create(event, checks2) {
@@ -49,8 +49,8 @@ export const checks = {
   },
   /**
    * Use checks, verifying and returning the results
-   * @param event H3Event
-   * @param checks OAuthChecks[] a list of checks to use
+   * @param event, H3Event
+   * @param checks, OAuthChecks[] a list of checks to use
    * @returns CheckUseResult a map that can contain `code_verifier` if `pkce` was used to be used in the token exchange
    */
   async use(event, checks2) {

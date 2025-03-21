@@ -1,7 +1,7 @@
+import crypto from "node:crypto";
 import { eventHandler, getQuery, sendRedirect } from "h3";
 import { withQuery } from "ufo";
 import { defu } from "defu";
-import { sha256 } from "ohash";
 import { handleAccessTokenErrorResponse, handleMissingConfiguration, getOAuthRedirectURL, requestAccessToken } from "../utils.js";
 import { useRuntimeConfig, createError } from "#imports";
 export function defineOAuthTikTokEventHandler({ config, onSuccess, onError }) {
@@ -31,7 +31,7 @@ export function defineOAuthTikTokEventHandler({ config, onSuccess, onError }) {
           scope: config.scope.join(","),
           ...config.sandbox ? {
             code_verifier: codeVerifier,
-            code_challenge: sha256(codeVerifier),
+            code_challenge: crypto.createHash("sha256").update(codeVerifier).digest("hex"),
             code_challenge_method: "S256"
           } : {}
         })
